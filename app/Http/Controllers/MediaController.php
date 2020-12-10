@@ -14,17 +14,15 @@ class MediaController extends Controller
     {
         $this->media = new Media();
     }
+
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function index(Request $request)
     {
-        $days = 'today';
-        if (isset($request->days)) {
-            $days = $request->days . ' days';
-        }
+        $days = $this->media->calculateDays($request);
 
         $response = HTTP::get('https://api.nasa.gov/planetary/apod/', [
             'api_key' => getenv('NASA_API_KEY'),

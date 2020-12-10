@@ -6,18 +6,49 @@ class Media
 {
     protected const VIDEO = 'video';
     protected const IMAGE = 'image';
+    protected const TODAY = 'today';
+
+    /**
+     * @param $response
+     * @param $days
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function generateMedia($response, $days)
     {
-        is_numeric($days) ? $days -= 1 : $days = -1;
         $mediaType = $response['media_type'];
         if ($mediaType == self::VIDEO) {
-            return $this->generatePhoto($days);
+            is_numeric($days) ? $days -= 1 : $days = -1;
+            return redirect()->action(['App\Http\Controllers\MediaController', 'index'], ['days' => $days]);
         }
+        $fileName = str_replace(' ','-', $response['title']);
+        $fileName = str_replace(':', '', $fileName);
+
+        if (!is_file($fileName)) {
+            $this->compressImage($response);
+        }
+        $response['compressed_path'] = $fileName;
         return $response;
     }
 
-    public function generatePhoto($days)
+    /**
+     * @param $request
+     * @return string
+     */
+    public function calculateDays($request)
     {
-        return redirect()->action(['App\Http\Controllers\MediaController', 'index'], ['days' => $days]);
+        $days = self::TODAY;
+        if (isset($request->days)) {
+            $days = $request->days . ' days';
+        }
+
+        return $days;
+    }
+    public function compressImage($response)
+    {
+        \Tinify\setKey(getenv('TINIFY_API_KEY'));
+        $source = \Tinify\fromUrl($response['url']);
+        $fileName = str_replace(' ','-', $response['title']);
+        $fileName = str_replace(':', '', $fileName);
+        $source->toFile($fileName);
     }
 }
