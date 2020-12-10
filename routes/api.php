@@ -19,3 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::Resource('/weather', 'App\Http\Controllers\WeatherController');
+Route::get('/media/generate-photo', 'App\Http\Controllers\MediaController@generatePhoto');
+Route::Resource('/media', 'App\Http\Controllers\MediaController');
