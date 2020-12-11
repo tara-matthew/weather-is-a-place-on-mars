@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Helpers\Media;
+use Illuminate\Support\Facades\Storage;
 
 class MediaController extends Controller
 {
@@ -29,7 +30,21 @@ class MediaController extends Controller
             'date' => date('yy-m-d', strtotime($days))
         ])->json();
 
-        return $this->media->generateMedia($response, $request->days);
+        return $this->media->generateMedia($response, $request->input('days'));
+    }
+
+    public function compressImage(Request $request)
+    {
+        $fileName = strtolower($request->input('filename'));
+        $url = $request->input('url');
+        $response = HTTP::get('http://api.resmush.it/ws.php/', [
+            'img' => $url,
+            'timeout' => 180
+        ])->json();
+
+        $imageContents = HTTP::get($response['dest']);
+
+        return $this->media->compressImage($response, $fileName, $imageContents);
     }
 
     /**

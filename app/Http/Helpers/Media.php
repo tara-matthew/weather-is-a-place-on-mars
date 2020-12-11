@@ -2,6 +2,8 @@
 
 namespace App\Http\Helpers;
 
+use Illuminate\Support\Facades\Storage;
+
 class Media
 {
     protected const VIDEO = 'video';
@@ -20,13 +22,17 @@ class Media
             is_numeric($days) ? $days -= 1 : $days = -1;
             return redirect()->action(['App\Http\Controllers\MediaController', 'index'], ['days' => $days]);
         }
-        $fileName = str_replace(' ','-', $response['title']);
-        $fileName = str_replace(':', '', $fileName);
 
-        if (!is_file($fileName)) {
-            $this->compressImage($response);
+        $url = $response['url'];
+        $fileName = str_replace(' ', '-', $response['title']);
+        $fileName = strtolower(str_replace(':', '', $fileName));
+        if (!Storage::disk('uploads')->exists($fileName . '.jpg')) {
+            return redirect()->action(
+                ['App\Http\Controllers\MediaController', 'compressImage'],
+                ['filename' => $fileName, 'url' => $url]
+            );
         }
-        $response['compressed_path'] = $fileName;
+        $response['compressed_url'] = $fileName . '.jpg';
         return $response;
     }
 
@@ -43,12 +49,11 @@ class Media
 
         return $days;
     }
-    public function compressImage($response)
+    public function compressImage($response, $fileName, $imageContents)
     {
-        \Tinify\setKey(getenv('TINIFY_API_KEY'));
-        $source = \Tinify\fromUrl($response['url']);
-        $fileName = str_replace(' ','-', $response['title']);
-        $fileName = str_replace(':', '', $fileName);
-        $source->toFile($fileName);
+        Storage::disk('uploads')->put($fileName . '.jpg', $imageContents);
+
+        $response['compressed_url'] = $fileName . '.jpg';
+        return $response;
     }
 }
