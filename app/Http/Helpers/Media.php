@@ -15,24 +15,28 @@ class Media
      * @param $days
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function generateMedia($response, $days)
+    public function checkFormat($response, $days)
     {
         $mediaType = $response['media_type'];
         if ($mediaType == self::VIDEO) {
             is_numeric($days) ? $days -= 1 : $days = -1;
             return redirect()->action(['App\Http\Controllers\MediaController', 'index'], ['days' => $days]);
         }
+        return $this->generateImage($response, $days);
+    }
 
+    public function generateImage($response)
+    {
         $url = $response['url'];
         $fileName = str_replace(' ', '-', $response['title']);
-        $fileName = strtolower(str_replace(':', '', $fileName));
-        if (!Storage::disk('uploads')->exists($fileName . '.jpg')) {
+        $fileName = strtolower(str_replace(':', '', $fileName) . '.jpg');
+        if (!Storage::disk('uploads')->exists($fileName)) {
             return redirect()->action(
                 ['App\Http\Controllers\MediaController', 'compressImage'],
                 ['filename' => $fileName, 'url' => $url]
             );
         }
-        $response['compressed_url'] = $fileName . '.jpg';
+        $response['compressed_url'] = $fileName;
         return $response;
     }
 
@@ -49,11 +53,11 @@ class Media
 
         return $days;
     }
-    public function compressImage($response, $fileName, $imageContents)
+    public function compressImage($fileName, $imageContents, $response)
     {
-        Storage::disk('uploads')->put($fileName . '.jpg', $imageContents);
+        Storage::disk('uploads')->put($fileName, $imageContents);
 
-        $response['compressed_url'] = $fileName . '.jpg';
+        $response['compressed_url'] = $fileName;
         return $response;
     }
 }

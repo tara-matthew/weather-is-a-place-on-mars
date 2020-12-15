@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d0476f314895fe095f541103f648a0cd",
+    "content-hash": "7c8a6bdfcc0092f19891dd928738a1de",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -590,6 +590,78 @@
                 }
             ],
             "time": "2020-10-22T13:57:20+00:00"
+        },
+        {
+            "name": "golchha21/resmushit",
+            "version": "1.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/golchha21/ReSmushIt.git",
+                "reference": "45ff2f75304fe2267523bd69a60d882492349115"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/golchha21/ReSmushIt/zipball/45ff2f75304fe2267523bd69a60d882492349115",
+                "reference": "45ff2f75304fe2267523bd69a60d882492349115",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-fileinfo": "*",
+                "ext-json": "*",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "laravel/framework": "^5.8|^6.0|^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Golchha21\\ReSmushIt\\Providers\\ServiceProvider"
+                    ]
+                },
+                "aliases": {
+                    "Optimize": "Golchha21\\ReSmushIt\\Facades\\Optimize"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Golchha21\\ReSmushIt\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ulhas Vardhan Golchha",
+                    "email": "vardhans@ulhas.net",
+                    "homepage": "http://www.ulhas.net",
+                    "role": "Web Architect"
+                }
+            ],
+            "description": "A Laravel package for the popular image optimization web service reSmush.it",
+            "homepage": "https://github.com/golchha21/resmushit",
+            "keywords": [
+                "golchha21",
+                "image-compression",
+                "image-compressor",
+                "image-optimisation",
+                "image-optimization",
+                "image-optimizer",
+                "laravel",
+                "laravel-package",
+                "php",
+                "resmushit"
+            ],
+            "support": {
+                "email": "vardhans@ulhas.net",
+                "issues": "https://github.com/golchha21/resmushit/issues",
+                "source": "https://github.com/golchha21/ReSmushIt/tree/v1.2.2"
+            },
+            "time": "2020-04-25T13:39:42+00:00"
         },
         {
             "name": "graham-campbell/result-type",
