@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use GuzzleHttp\Exception\BadResponseException;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\ServerException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Helpers\Media;
-use Illuminate\Support\Facades\Storage;
 
 class MediaController extends Controller
 {
@@ -30,7 +27,7 @@ class MediaController extends Controller
 
         $response = HTTP::get('https://api.nasa.gov/planetary/apod', [
             'api_key' => getenv('NASA_API_KEY'),
-            'date' => date('yy-m-d', strtotime('-25 days'))
+            'date' => date('yy-m-d', strtotime($days))
         ])->json();
 
         return $this->media->checkFormat($response, $request->input('days'));
@@ -40,20 +37,19 @@ class MediaController extends Controller
     {
         $fileName = strtolower($request->input('filename'));
         $url = $request->input('url');
-        
         try {
-            $response = HTTP::get('http://api.resmush.it/ws.php', [
+            $response = HTTP::timeout(3)->get('http://api.resmush.it/ws.php', [
                 'img' => $url,
-                'connect_timeout' => false,
             ]);
-
-        if ($response->ok()) {
+            
             $response = $response->json();
             $destination = $response['dest'];
             return redirect()->action(['App\Http\Controllers\MediaController', 'testCompression'], ['destination' => $destination, 'response' => $response, 'filename' => $fileName]);
-        }
-        } catch (ServerException $e) {
-            return $e->getResponse()->getBody()->getContents();
+        } catch (ConnectionException $e) {
+            return redirect()->action(
+                ['App\Http\Controllers\MediaController', 'compressImage'],
+                ['filename' => $fileName, 'url' => $url]
+            );
         }
     }
 
@@ -62,9 +58,7 @@ class MediaController extends Controller
         $destination = $request->get('destination');
         $response = $request->get('response');
         $fileName = $request->get('filename');
-        $imageContents = HTTP::get($destination, [
-            'timeout' => 180
-        ]);
+        $imageContents = HTTP::timeout(3)->get($destination);
 
         return $this->media->compressImage($fileName, $imageContents, $response);
     }
