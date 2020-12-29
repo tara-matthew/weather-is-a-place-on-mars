@@ -58,7 +58,7 @@ class MediaController extends Controller
         $destination = $request->get('destination');
         $response = $request->get('response');
         $fileName = $request->get('filename');
-        $imageContents = HTTP::timeout(3)->get($destination);
+        $imageContents = HTTP::timeout(3)->withoutVerifying()->get($destination);
 
         return $this->media->compressImage($fileName, $imageContents, $response);
     }
