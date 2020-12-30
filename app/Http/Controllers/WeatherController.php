@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\Weather;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class WeatherController extends Controller
 {
+    protected $weather;
+    public function __construct()
+    {
+        $this->weather = new Weather();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -18,9 +25,11 @@ class WeatherController extends Controller
             'api_key' => getenv('NASA_API_KEY'),
             'feedtype' => 'json',
             'version' => 1.0
-        ]);
+        ])->json();
 
-        return $response->json();
+        return $this->weather->getTemperatureData($response);
+
+        return $response;
     }
 
     /**
